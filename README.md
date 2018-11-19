@@ -1,0 +1,1 @@
+Separates experiment protocols from the logic that controls the hardware and software that executes them.   
