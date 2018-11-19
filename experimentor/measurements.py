@@ -27,26 +27,26 @@ class MeasurementSet(Measurement):
             time.sleep(0.5)
 
 
-class AndorSignal(Measurement):
+class SpectroSignal(Measurement):
     #name = 'Andor'
 
     def perform(self, idx, system, state):
-        andor = system.andor
-        andor.shutter = 'open'
-        andor.running = True
-        while andor.running:
+        spectro = system.spectro
+        spectro.shutter = 'open'
+        spectro.running = True
+        while spectro.running:
             time.sleep(0.5)
-        andor.saved = True
+        spectro.saved = True
 
 
-class AndorBackground(Measurement):
+class SpectroBackground(Measurement):
     #name = 'Andor'
 
     def perform(self, idx, system, state):
-        andor = system.andor
-        andor.shutter = 'closed'
-        andor.running = True
-        while andor.running:
+        spectro = system.spectro
+        spectro.shutter = 'closed'
+        spectro.running = True
+        while spectro.running:
             time.sleep(0.5)
-        andor.saved = True
+        spectro.saved = True
 
