@@ -3,7 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="a55084c1-8d2f-4014-a87d-912fdf9826e9" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/experimentor/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/experimentor/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/examples/experiment_protocol.conf" beforeDir="false" afterPath="$PROJECT_DIR$/examples/experiment_protocol.conf" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -39,13 +39,13 @@
           <entry key="conf" value="41" />
           <entry key="md" value="146" />
           <entry key="py" value="1224" />
-          <entry key="txt" value="63" />
+          <entry key="txt" value="72" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
           <entry key="Markdown" value="146" />
-          <entry key="PLAIN_TEXT" value="104" />
+          <entry key="PLAIN_TEXT" value="113" />
           <entry key="Python" value="1224" />
         </counts>
       </usages-collector>
@@ -65,14 +65,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/experimentor/__init__.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="29">
-              <caret line="1" column="30" selection-start-line="1" selection-start-column="30" selection-end-line="1" selection-end-column="30" />
-              <folding>
-                <element signature="e#0#34#0" expanded="true" />
-              </folding>
+              <caret line="1" column="12" selection-start-line="1" selection-start-column="12" selection-end-line="1" selection-end-column="12" />
             </state>
           </provider>
         </entry>
@@ -133,11 +130,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/examples/experiment_protocol.conf">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="809">
-              <caret line="78" lean-forward="true" selection-start-line="78" selection-end-line="78" />
+            <state relative-caret-position="722">
+              <caret line="75" column="17" lean-forward="true" selection-start-line="75" selection-start-column="17" selection-end-line="75" selection-end-column="17" />
             </state>
           </provider>
         </entry>
@@ -171,9 +168,9 @@
         <option value="$PROJECT_DIR$/setup.py" />
         <option value="$PROJECT_DIR$/README.md" />
         <option value="$PROJECT_DIR$/experimentor/measurements.py" />
-        <option value="$PROJECT_DIR$/examples/experiment_protocol.conf" />
         <option value="$PROJECT_DIR$/experimentor/experiment.py" />
         <option value="$PROJECT_DIR$/experimentor/__init__.py" />
+        <option value="$PROJECT_DIR$/examples/experiment_protocol.conf" />
       </list>
     </option>
   </component>
@@ -280,7 +277,14 @@
       <option name="project" value="LOCAL" />
       <updated>1542703091128</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="init file">
+      <created>1542704038052</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1542704038052</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -320,7 +324,8 @@
     <MESSAGE value="some small refactoring" />
     <MESSAGE value="mongodb support" />
     <MESSAGE value="experiment changed" />
-    <option name="LAST_COMMIT_MESSAGE" value="experiment changed" />
+    <MESSAGE value="init file" />
+    <option name="LAST_COMMIT_MESSAGE" value="init file" />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/examples/calibration_protocol.conf">
@@ -363,13 +368,6 @@
     <entry file="file://$PROJECT_DIR$/examples/basic_protocol.conf">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/examples/experiment_protocol.conf">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="809">
-          <caret line="78" lean-forward="true" selection-start-line="78" selection-end-line="78" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/experimentor/measurements.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="348">
@@ -379,6 +377,13 @@
             <marker date="1542702849261" expanded="true" signature="328:496" ph="..." />
             <marker date="1542702849261" expanded="true" signature="627:2656" ph="..." />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/experimentor/__init__.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="29">
+          <caret line="1" column="12" selection-start-line="1" selection-start-column="12" selection-end-line="1" selection-end-column="12" />
         </state>
       </provider>
     </entry>
@@ -392,13 +397,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/experimentor/__init__.py">
+    <entry file="file://$PROJECT_DIR$/examples/experiment_protocol.conf">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="29">
-          <caret line="1" column="30" selection-start-line="1" selection-start-column="30" selection-end-line="1" selection-end-column="30" />
-          <folding>
-            <element signature="e#0#34#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="722">
+          <caret line="75" column="17" lean-forward="true" selection-start-line="75" selection-start-column="17" selection-end-line="75" selection-end-column="17" />
         </state>
       </provider>
     </entry>
