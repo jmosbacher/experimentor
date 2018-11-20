@@ -57,7 +57,7 @@ class SpectroMeasurement(Measurement):
 
     def perform(self, idx, system, state):
         spectro = system.spectro
-        system.power_meter.counts = 100
+        system.power_meter.count = 100
         pwr = [system.power_meter.power]
         spectro.running = True
         pwr.append(system.power_meter.power)
