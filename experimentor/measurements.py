@@ -98,7 +98,6 @@ class SpectroSignal(SpectroMeasurement):
 
     def perform(self, idx, system, state):
         system.spectro.shutter = 'open'
-
         super().perform(idx, system, state)
 
 
