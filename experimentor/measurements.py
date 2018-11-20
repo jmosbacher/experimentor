@@ -77,10 +77,16 @@ class SpectroMeasurement(Measurement):
         spectro.saved = True
         fpath = state["spectro"]["save_path"]
         parts = fpath.split('.')
-        ppath = ''.join(parts[:-1] + ["_power."] + [parts[-1]])
+        ppath = ''.join(parts[:-1] + ["_details."] + [parts[-1]])
         with open(ppath, "w") as f:
             for k,v in power.items():
-                f.write(f"{k} : {v}\n")
+                f.write(f"power_{k} : {v}\n")
+            f.write("\n\n")
+            for name, dev in state.items():
+                for k,v in dev.items():
+                    f.write(f"{name}_{k} : {v}\n")
+                f.write("\n\n")
+
         if self.db is not None:
             d, m = self.read_ascii_file(fpath)
             doc = {
@@ -90,6 +96,7 @@ class SpectroMeasurement(Measurement):
                 "metadata": m,
                 "data_hash": hash(d),
                 "measurement_name": self.name,
+                "system_state": state,
             }
             self.db[self.name].insert_one(doc)
 
@@ -99,12 +106,16 @@ class SpectroSignal(SpectroMeasurement):
 
     def perform(self, idx, system, state):
         system.spectro.shutter = 'open'
+        system.source_shutter.open = True
         super().perform(idx, system, state)
         system.spectro.shutter = 'closed'
+        system.source_shutter.open = False
 
 class SpectroBackground(SpectroMeasurement):
 
     def perform(self, idx, system, state):
         system.spectro.shutter = 'closed'
+        system.source_shutter.open = True
         super().perform(idx, system, state)
+        system.source_shutter.open = False
 
