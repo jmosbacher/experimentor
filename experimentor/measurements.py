@@ -8,9 +8,8 @@ import logging
 import ast
 import datetime
 import numpy as np
-
+import os
 logger = logging.getLogger(__name__)
-
 
 class Measurement:
     name = 'measurement'
@@ -59,13 +58,22 @@ class SpectroMeasurement(Measurement):
     def perform(self, idx, system, state):
         spectro = system.spectro
         system.power_meter.count = 100
+        system.power_meter.wavelength = state["mono"]["wavelength"]
+        
+        fname = state["spectro"]["save_path"]
+        ext = fname.split('.')[-1]
+        fpath = os.path.join(system.experiment.wd, system.experiment.name, fname.replace(ext, f"_{self.name}.{ext}" ))
+        ppath = os.path.join(system.experiment.wd, system.experiment.name, fname.replace(ext, f"_{self.name}_details.{ext}" ))
+        system.spectro.save_path = fpath
+
         pwr = [system.power_meter.power]
         spectro.running = True
         pwr.append(system.power_meter.power)
 
         while spectro.running:
             pwr.append(system.power_meter.power)
-            time.sleep(0.1)
+            time.sleep(0.05)
+
         power = {
             "mean":np.mean(pwr),
             "median": np.median(pwr),
@@ -74,10 +82,15 @@ class SpectroMeasurement(Measurement):
             "counts_per_sample": 100,
         }
 
-        spectro.saved = True
-        fpath = state["spectro"]["save_path"]
-        parts = fpath.split('.')
-        ppath = ''.join(parts[:-1] + ["_details."] + [parts[-1]])
+        
+        for _ in range(10):
+            spectro.saved = True
+            if os.path.isfile(fpath):
+                break
+            time.sleep(1)
+            if os.path.isfile(fpath):
+                break
+
         with open(ppath, "w") as f:
             for k,v in power.items():
                 f.write(f"power_{k} : {v}\n")
@@ -86,36 +99,54 @@ class SpectroMeasurement(Measurement):
                 for k,v in dev.items():
                     f.write(f"{name}_{k} : {v}\n")
                 f.write("\n\n")
-
+        
         if self.db is not None:
             d, m = self.read_ascii_file(fpath)
             doc = {
                 "creation_date": datetime.datetime.utcnow(),
+                "document_type": "measurement",
                 "data": d,
                 "power": power,
                 "metadata": m,
                 "data_hash": hash(d),
                 "measurement_name": self.name,
+                "measurement_class": self.__class__.__name__,
                 "system_state": state,
+                "data_file_path": fpath,
             }
-            self.db[self.name].insert_one(doc)
+            self.db[system.experiment.name].insert_one(doc)
 
 
 class SpectroSignal(SpectroMeasurement):
     #name = 'Andor'
+    
 
     def perform(self, idx, system, state):
-        system.spectro.shutter = 'open'
-        system.source_shutter.open = True
+        system.spectro.shutter = 'auto'
+        system.source_shutter.on = True
         super().perform(idx, system, state)
         system.spectro.shutter = 'closed'
-        system.source_shutter.open = False
+        system.source_shutter.on = False
 
 class SpectroBackground(SpectroMeasurement):
+    def __init__(self, name, mongodb=None):
+        super().__init__( name, mongodb)
+        self.last_crystal = None
 
     def perform(self, idx, system, state):
+        if state["crystal_wheel"]["position"]==self.last_crystal:
+            return
+        self.last_crystal = state["crystal_wheel"]["position"]
         system.spectro.shutter = 'closed'
-        system.source_shutter.open = True
+        system.source_shutter.on = True
         super().perform(idx, system, state)
-        system.source_shutter.open = False
+        system.source_shutter.on = False
 
+class SpectroAmbient(SpectroMeasurement):
+
+    def perform(self, idx, system, state):
+        if state["crystal_wheel"]["position"]==0:
+            return
+        system.spectro.shutter = 'auto'
+        system.source_shutter.on = False
+        super().perform(idx, system, state)

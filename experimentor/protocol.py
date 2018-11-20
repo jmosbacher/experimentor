@@ -1,11 +1,10 @@
 from itertools import product
 from collections import defaultdict
-
+import time
 
 class Protocol:
     def __init__(self, config: dict):
         self.config = config
-
 
     @classmethod
     def from_config_file(cls, path):
@@ -47,15 +46,20 @@ class Protocol:
         for (dev,), cfg in configs['derivation']:
             cs = [(dev, attr, f"{dev}_{attr}", cfg[f"{attr}"]) for attr in cfg["values"]]
             derivations.extend(cs)
+        
+        skips = []
+        for (name,), cfg in configs['skip']:
+            cs = [cfg[f"{attr}"] for attr in cfg["values"]]
+            skips.append((name, cs))
 
-        config = {"lists": lists, "mappings": mappings,
+        config = {"lists": lists, "mappings": mappings, "skips": skips,
                   "constants": constants, "derivations": derivations}
         return config
 
     def __iter__(self):
         state = defaultdict(dict)
-
-        local = {}
+        
+        local = {"timestamp": int(time.time())}
 
         for dev, attr, alias, val in self.config["constants"]:
             state[dev][attr] = val
@@ -69,6 +73,7 @@ class Protocol:
                 if state[dev].get(attr, None) != val:
                     new_state[dev][attr] = val
                 state[dev][attr] = val
+
             for dev, attr, alias, mapping in self.config['mappings']:
                 for val, condition in mapping.items():
                     if eval(condition.format(**local)):
@@ -76,10 +81,17 @@ class Protocol:
                             new_state[dev][attr] = val
                         state[dev][attr] = val
                         break
+
             for dev, attr, alias, expression in self.config['derivations']:
                 val = expression.format(**local)
                 if state[dev].get(attr, None) != val:
                     new_state[dev][attr] = val
                 state[dev][attr] = val
+
+            skip = False
+            for name, expressions in self.config["skips"]:
+                if all([eval(exp.format(**local)) for exp in expressions]):
+                    skip = True
+                    break
             # state.update(new_state)
-            yield idx, state, new_state
+            yield idx, skip,  state, new_state
