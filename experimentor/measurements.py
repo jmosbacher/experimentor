@@ -97,8 +97,7 @@ class SpectroSignal(SpectroMeasurement):
     #name = 'Andor'
 
     def perform(self, idx, system, state):
-        spectro = system.spectro
-        spectro.shutter = 'open'
+        system.spectro.shutter = 'open'
 
         super().perform(idx, system, state)
 
@@ -106,7 +105,6 @@ class SpectroSignal(SpectroMeasurement):
 class SpectroBackground(SpectroMeasurement):
 
     def perform(self, idx, system, state):
-        spectro = system.spectro
-        spectro.shutter = 'closed'
+        system.spectro.shutter = 'closed'
         super().perform(idx, system, state)
 
