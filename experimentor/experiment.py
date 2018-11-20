@@ -33,7 +33,7 @@ class Experiment:
                 measurement.perform(idx, self.system, state)
 
     def log_experiment(self):
-        fname = '_'.join(self.name, "log", time.strftime("%Y%m%d_%H%M%S"))
+        fname = '_'.join([self.name, "log", time.strftime("%Y%m%d_%H%M%S")])
         folder = os.path.join(self.wd, self.name)
 
         try:
