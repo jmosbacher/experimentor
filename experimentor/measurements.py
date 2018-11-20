@@ -76,7 +76,7 @@ class SpectroMeasurement(Measurement):
         spectro.saved = True
         fpath = state["spectro"]["save_path"]
         parts = fpath.split('.')
-        ppath = ''.join(parts[:-1]+ ["_power."] + parts[-1])
+        ppath = ''.join(parts[:-1] + ["_power."] + [parts[-1]])
         with open(ppath, "w") as f:
             for k,v in power.items():
                 f.write(f"{k} : {v}\n")
