@@ -34,12 +34,19 @@ class Experiment:
 
     def log_experiment(self):
         fname = '_'.join(self.name, "log", time.strftime("%Y%m%d_%H%M%S"))
-        path = os.path.join(self.wd, fname)
+        folder = os.path.join(self.wd, self.name)
+
+        try:
+            os.mkdir(folder)
+        except FileExistsError:
+            pass
+
+        path = os.path.join(folder,fname)
         with open(path, 'w') as f:
             f.write(f"{datetime.datetime.utcnow()}:   {self.name} started.\nMetadata:\n")
             for k,v in self.metadata.items():
                 f.write(f"{k} : {v}\n")
-        fh = logging.FileHandler('spam.log')
+        fh = logging.FileHandler(path)
         fh.setLevel(logging.DEBUG)
         logger.addHandler(fh)
 
