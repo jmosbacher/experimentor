@@ -30,7 +30,7 @@ class Measurement:
 
 class SpectroMeasurement(Measurement):
     @staticmethod
-    def read_ascii_file(path, delim=' '):
+    def read_ascii_file(path, delim='\t'):
 
         data = []
         metadata = {}
