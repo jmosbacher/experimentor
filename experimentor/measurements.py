@@ -21,7 +21,8 @@ class Measurement:
         if mongodb is not None:
             client = pymongo.MongoClient()
             self.db = client[mongodb]
-        self.db = None
+        else:
+            self.db = None
 
     def perform(self, idx, system, state):
         raise NotImplementedError
