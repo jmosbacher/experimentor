@@ -51,16 +51,19 @@ class Experiment:
 
         backlog = {}
         for idx, skip, running_state, new_state in Protocol.from_config_file(self.protocol_file):
+            if not idx:
+                self.system.set_state(running_state)
+                
             if print_datetime:
                 print('-'*60)
                 print(datetime.datetime.utcnow())
             if print_state_idx:
                 print(f"At state {idx}")
 
-            state.update(new_state)
+            state.update(running_state)
             if idx<startfrom or (idx in skip_idxs) or skip:
-                backlog.update(new_state)
-                print_state_to_stdout(new_state)
+                backlog.update(running_state)
+                print_state_to_stdout(running_state)
                 print(f"skipping state {idx}.")
                 continue
 
