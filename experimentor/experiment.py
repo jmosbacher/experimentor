@@ -74,7 +74,7 @@ class Experiment:
             self.system.set_state(new_state)
             if self.validate_state:
                 state = self.system.get_state()
-            self.logger.info("Finished moving to new state. State changes:")
+            self.logger.info(f"Finished moving to state {idx}. State changes:")
             self.logger.info(str(new_state))
             for measurement in self.measurements:
                 measurement.perform(idx, self.system, state)

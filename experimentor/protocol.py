@@ -3,95 +3,76 @@ from collections import defaultdict
 import time
 
 class Protocol:
-    def __init__(self, config: dict):
-        self.config = config
+    def __init__(self, iterators, maps, evaluated, excluded):
+        self.itrerators = iterators
+        self.maps = maps
+        self.evaluated = evaluated
+        self.excluded = excluded
+
 
     @classmethod
     def from_config_file(cls, path):
         import configparser
         config = configparser.ConfigParser()
         config.read(path)
-        configs = defaultdict(list)
 
-        for name in config.sections():
-            params = dict(config[name])
-            name = tuple(name.split('.'))
-            t = params.pop('type', 'constant')
+        aliases = dict(config['aliases'])
 
-            params['values'] = eval(params.pop('values', '[]'))
-            configs[t].append((name, params))
-        cfg = cls.flatten_configs(configs)
-        return cls(cfg)
+        iterators = []
+        for name, expr in config['iterators'].items():
+            dev, attr = name.split('.')
+            alias = aliases.get(name, name)
+            it = [(dev, attr, alias, val) for val in eval(expr)]
+            iterators.append(it)
 
-    @staticmethod
-    def flatten_configs(configs):
-        lists = []
-        for (dev, attr), cfg in configs['list']:
-            alias = cfg.get("alias", f"{dev}_{attr}")
-            l = [(dev, attr, alias, val) for val in cfg['values']]
-            lists.append(l)
+        maps = []
+        for name, expr in config['mappings'].items():
+            dev, attr = name.split('.')
+            alias = aliases.get(name, name)
+            map = dict(config[name])
+            maps.append((dev, attr, alias, map))
 
-        mappings = []
-        for (dev, attr), cfg in configs['mapping']:
-            mapping = {val: cfg[f"{val}"] for val in cfg["values"]}
-            alias = cfg.get("alias", f"{dev}_{attr}")
-            mappings.append((dev, attr, alias, mapping))
+        evaluated = []
+        for name, expr in config['evaluated'].items():
+            dev, attr = name.split('.')
+            alias = aliases.get(name, name)
+            evaluated.append((dev, attr, alias, expr))
 
-        constants = []
-        for (dev,), cfg in configs['constant']:
-            cs = [(dev, attr, f"{dev}_{attr}", cfg[f"{attr}"]) for attr in cfg["values"]]
-            constants.extend(cs)
+        excluded = []
+        for name, expr in config['excluded'].items():
+            dev, attr = name.split('.')
+            alias = aliases.get(name, name)
+            excluded.append((dev, attr, alias, expr))
 
-        derivations = []
-        for (dev,), cfg in configs['derivation']:
-            cs = [(dev, attr, f"{dev}_{attr}", cfg[f"{attr}"]) for attr in cfg["values"]]
-            derivations.extend(cs)
-        
-        skips = []
-        for (name,), cfg in configs['skip']:
-            cs = [cfg[f"{attr}"] for attr in cfg["values"]]
-            skips.append((name, cs))
+        return cls(iterators, maps, evaluated, excluded)
 
-        config = {"lists": lists, "mappings": mappings, "skips": skips,
-                  "constants": constants, "derivations": derivations}
-        return config
 
-    def __iter__(self):
-        state = defaultdict(dict)
-        
-        local = {"timestamp": int(time.time())}
+    def states(self):
+        shared = {}
+        states = []
 
-        for dev, attr, alias, val in self.config["constants"]:
-            state[dev][attr] = val
-            local[alias] = val
-
-        for idx, lparams in enumerate(product(*self.config["lists"])):
-            new_state = defaultdict(dict)
-            local['state_idx'] = idx
-            for (dev, attr, alias, val) in lparams:
-                local[alias] = val
-                if state[dev].get(attr, None) != val:
-                    new_state[dev][attr] = val
+        # Iterate over the external product of iterators
+        for iparams in product(*self.iterators):
+            state = defaultdict(dict)
+            for dev, attr, alias, val in iparams:
+                shared[alias] = val
                 state[dev][attr] = val
 
-            for dev, attr, alias, mapping in self.config['mappings']:
-                for val, condition in mapping.items():
-                    if eval(condition.format(**local)):
-                        if state[dev].get(attr, None) != val:
-                            new_state[dev][attr] = val
-                        state[dev][attr] = val
+            # set the mapped parameters
+            for dev, attr, alias, mapping in self.mapped:
+                for val, expr in mapping:
+                    if eval(expr.format(shared)):
                         break
-
-            for dev, attr, alias, expression in self.config['derivations']:
-                val = expression.format(**local)
-                if state[dev].get(attr, None) != val:
-                    new_state[dev][attr] = val
+                shared[alias] = val
                 state[dev][attr] = val
 
-            skip = False
-            for name, expressions in self.config["skips"]:
-                if all([eval(exp.format(**local)) for exp in expressions]):
-                    skip = True
-                    break
-            # state.update(new_state)
-            yield idx, skip,  state, new_state
+            for dev, attr, alias, expr in self.evaluated:
+                val = eval(expr.format(**shared))
+                shared[alias] = val
+                state[dev][attr] = val
+
+            if any([eval(expr.format(**shared)) for expr in self.excluded]):
+                continue
+
+            states.append(state)
+        return states
