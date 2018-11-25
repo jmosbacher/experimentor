@@ -56,21 +56,22 @@ class SpectroMeasurement(Measurement):
             return None, None
 
     def perform(self, idx, system, state):
-        spectro = system.spectro
+        
         system.power_meter.count = 100
         system.power_meter.wavelength = state["mono"]["wavelength"]
         
-        fname = state["spectro"]["save_path"]
+        fname = state["spectro"].get("save_path", 'counts.asc')
         ext = fname.split('.')[-1]
-        fpath = os.path.join(system.experiment.wd, system.experiment.name, fname.replace(ext, f"_{self.name}.{ext}" ))
-        ppath = os.path.join(system.experiment.wd, system.experiment.name, fname.replace(ext, f"_{self.name}_details.{ext}" ))
+        fpath = os.path.join(system.experiment.wd, system.experiment.name, fname.replace(f".{ext}", f"_{self.name}.{ext}" ))
+        ppath = os.path.join(system.experiment.wd, system.experiment.name, fname.replace(f".{ext}", f"_{self.name}_details.{ext}" ))
         system.spectro.save_path = fpath
 
         pwr = [system.power_meter.power]
-        spectro.running = True
+        system.spectro.running = True
+        time.sleep(0.05)
         pwr.append(system.power_meter.power)
 
-        while spectro.running:
+        while system.spectro.running:
             pwr.append(system.power_meter.power)
             time.sleep(0.05)
 
@@ -84,7 +85,7 @@ class SpectroMeasurement(Measurement):
 
         
         for _ in range(10):
-            spectro.saved = True
+            system.spectro.saved = True
             if os.path.isfile(fpath):
                 break
             time.sleep(1)
@@ -120,7 +121,6 @@ class SpectroMeasurement(Measurement):
 class SpectroSignal(SpectroMeasurement):
     #name = 'Andor'
     
-
     def perform(self, idx, system, state):
         system.spectro.shutter = 'auto'
         system.source_shutter.on = True
@@ -132,11 +132,17 @@ class SpectroBackground(SpectroMeasurement):
     def __init__(self, name, mongodb=None):
         super().__init__( name, mongodb)
         self.last_crystal = None
+        self.exposures_done = []
 
     def perform(self, idx, system, state):
-        if state["crystal_wheel"]["position"]==self.last_crystal:
+        exp = state["spectro"].get("exposure", None)
+        pos = state["crystal_wheel"].get("position", None )
+        if (pos == self.last_crystal) and (exp in self.exposures_done):
+            self.exposures_done = []
             return
-        self.last_crystal = state["crystal_wheel"]["position"]
+        else:
+            self.exposures_done.append(exp)
+        self.last_crystal = pos
         system.spectro.shutter = 'closed'
         system.source_shutter.on = True
         super().perform(idx, system, state)
@@ -145,7 +151,7 @@ class SpectroBackground(SpectroMeasurement):
 class SpectroAmbient(SpectroMeasurement):
 
     def perform(self, idx, system, state):
-        if state["crystal_wheel"]["position"]==0:
+        if state["crystal_wheel"].get("position", 0)!=0 or state["spectro"].get("exposure", 1)!=10:
             return
         system.spectro.shutter = 'auto'
         system.source_shutter.on = False

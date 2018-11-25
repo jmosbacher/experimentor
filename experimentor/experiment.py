@@ -48,14 +48,20 @@ class Experiment:
             self.logger.info("Initial State:")
             self.logger.info(str(state))
 
+
         for idx, state in enumerate(States.from_config_file(self.protocol_file)):
+
             if print_datetime:
+                print('-'*60)
                 print(datetime.datetime.utcnow())
             if print_state_idx:
+
                 print(idx)
                 
             if idx < startfrom or (idx in skip_idxs):
                 print_state_to_stdout(state)
+
+
                 print(f"skipping state {idx}.")
                 continue
 
