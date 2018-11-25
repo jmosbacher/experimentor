@@ -6,13 +6,14 @@ class Map:
         self.alias = alias
         self.map = map
         self.shared_state = shared_state
-        self.nmax = nmax
+        self.nmax = int(nmax)
 
     def __iter__(self):
         vals = []
         for expr, val in self.map.items():
             if eval(expr.format(**self.shared_state)):
-                vals.append(val)
+
+                vals.append(eval(val.format(**self.shared_state)))
                 if len(vals) >= self.nmax:
                     break
 
