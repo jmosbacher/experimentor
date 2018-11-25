@@ -1,11 +1,11 @@
 from typing import Iterable, Dict
 from .measurements import Measurement
-from .protocol import Protocol
+from .states import States
 import logging
 import os
 import time
 import datetime
-import pymongo
+
 
 
 def print_state_to_stdout(state):
@@ -13,9 +13,9 @@ def print_state_to_stdout(state):
         print(f"{dev}:")
         print(' ; '.join([f"{k}={v}" for k,v in d.items()] ))
 
+
 class Experiment:
-    attributes = ['name', 'wd', 'metadata']
-    connected = True
+
     def __init__(self, name, system, working_dir: str, protocol_file: str,
                  measurements: Iterable[Measurement], metadata={},
                  validate_state=False, mongodb=None):
@@ -29,6 +29,7 @@ class Experiment:
         self.metadata = metadata
 
         if mongodb is not None:
+            import pymongo
             client = pymongo.MongoClient()
             self.db = client[mongodb]
         else:
@@ -44,42 +45,34 @@ class Experiment:
 
         if get_initial_state:
             state = self.system.get_state()
-            self.logger.info("Current State:")
+            self.logger.info("Initial State:")
             self.logger.info(str(state))
-        else:
-            state = {}
 
-        backlog = {}
-        for idx, skip, running_state, new_state in Protocol.from_config_file(self.protocol_file):
-            if not idx:
-                self.system.set_state(running_state)
-                
+
+        for idx, state in enumerate(States.from_config_file(self.protocol_file)):
+
             if print_datetime:
                 print('-'*60)
                 print(datetime.datetime.utcnow())
             if print_state_idx:
-                print(f"At state {idx}")
 
-            state.update(running_state)
-            if idx<startfrom or (idx in skip_idxs) or skip:
-                backlog.update(running_state)
-                print_state_to_stdout(running_state)
+                print(idx)
+                
+            if idx < startfrom or (idx in skip_idxs):
+                print_state_to_stdout(state)
+
+
                 print(f"skipping state {idx}.")
                 continue
 
-            if len(backlog):
-                self.system.set_state(backlog)
-                state.update(backlog)
-                backlog = {}
-            
             if print_state:
-                print_state_to_stdout(new_state)
+                print_state_to_stdout(state)
 
-            self.system.set_state(new_state)
+            self.system.set_state(state)
             if self.validate_state:
                 state = self.system.get_state()
-            self.logger.info("Finished moving to new state. State changes:")
-            self.logger.info(str(new_state))
+            self.logger.info(f"Finished moving to state {idx}. State changes:")
+            self.logger.info(str(state))
             for measurement in self.measurements:
                 measurement.perform(idx, self.system, state)
 
@@ -130,5 +123,4 @@ class Experiment:
         fh.setFormatter(formatter)
         fh.setLevel(logging.INFO)
         self.logger.addHandler(fh)
-
 
