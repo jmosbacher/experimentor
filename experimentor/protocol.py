@@ -4,11 +4,10 @@ import time
 
 class Protocol:
     def __init__(self, iterators, maps, evaluated, excluded):
-        self.itrerators = iterators
+        self.iterators = iterators
         self.maps = maps
         self.evaluated = evaluated
         self.excluded = excluded
-
 
     @classmethod
     def from_config_file(cls, path):
@@ -48,23 +47,26 @@ class Protocol:
 
 
     def states(self):
-        shared = {}
-        states = []
+        return [s for s in self.iter_states()]
+
+    def iter_states(self):
+        shared = {'state_idx':0, 'datetime': time.time()}
 
         # Iterate over the external product of iterators
         for iparams in product(*self.iterators):
+
             state = defaultdict(dict)
             for dev, attr, alias, val in iparams:
                 shared[alias] = val
                 state[dev][attr] = val
 
             # set the mapped parameters
-            for dev, attr, alias, mapping in self.mapped:
-                for val, expr in mapping:
-                    if eval(expr.format(shared)):
+            for dev, attr, alias, mapping in self.maps:
+                for val, expr in mapping.items():
+                    if eval(expr.format(**shared)):
+                        shared[alias] = val
+                        state[dev][attr] = val
                         break
-                shared[alias] = val
-                state[dev][attr] = val
 
             for dev, attr, alias, expr in self.evaluated:
                 val = eval(expr.format(**shared))
@@ -73,6 +75,8 @@ class Protocol:
 
             if any([eval(expr.format(**shared)) for expr in self.excluded]):
                 continue
+            shared['state_idx'] += 1
+            yield state
 
-            states.append(state)
-        return states
+    def __iter__(self):
+        return self.iter_states()
