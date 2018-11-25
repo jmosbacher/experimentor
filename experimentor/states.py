@@ -13,46 +13,39 @@ def lazy_product(iters):
                 yield (it,) + rest
 
 class States:
-    def __init__(self, iterators, excluded=()):
+    def __init__(self, iterators, shared, excluded=()):
         self.iterators = iterators
-        self.shared_state = {}
+        self.shared_state = shared
+        self.excluded = excluded
 
     @classmethod
     def from_config_file(cls, path):
         import configparser
         config = configparser.ConfigParser(delimiters=(':'))
         config.read(path)
-
-        aliases = dict(config['aliases'])
-
+        special = ('excluded')
         iterators = []
-        for name, expr in config['iterators'].items():
+
+        shared = {}
+        names = [n for n in config.sections() if n not in special]
+
+        excluded = [(name, expr) for name, expr in config['excluded'].items()]
+
+        for name in names:
             dev, attr = name.split('.')
-            alias = aliases.get(name, name)
-            it = IterExpression(dev, attr, alias, expr)
+            cfg = dict(config[name])
+            kind = cfg.pop('kind')
+            alias = cfg.pop('alias', name)
+            if kind == 'iterExpr':
+                it = IterExpression(dev, attr, alias, cfg["expr"], shared)
+            elif kind == 'map':
+                nmax = cfg.pop('nmax', 1)
+                it = Map(dev, attr, alias, cfg, shared, nmax)
+            elif kind == 'eval':
+                it = Eval(dev, attr, alias, cfg["expr"], shared)
             iterators.append(it)
 
-
-        for name, nmax in config['maps'].items():
-            dev, attr = name.split('.')
-            alias = aliases.get(name, name)
-            map = dict(config[name])
-            m = Map(dev, attr, alias, map)
-            iterators.append(map)
-
-
-        evaluated = []
-        for name, expr in config['evaluated'].items():
-            dev, attr = name.split('.')
-            alias = aliases.get(name, name)
-
-            evaluated.append((dev, attr, alias, expr))
-
-        excluded = []
-        for name, expr in config['excluded'].items():
-            excluded.append((name, expr))
-
-        return cls(iterators, tuple(excluded))
+        return cls(iterators, shared,  tuple(excluded))
 
 
     def __iter__(self):

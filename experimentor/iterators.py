@@ -6,6 +6,7 @@ class Map:
         self.alias = alias
         self.map = map
         self.shared_state = shared_state
+        self.nmax = nmax
 
     def __iter__(self):
         vals = []
