@@ -3,9 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="a55084c1-8d2f-4014-a87d-912fdf9826e9" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/examples/experiment_protocol.conf" beforeDir="false" afterPath="$PROJECT_DIR$/examples/experiment_protocol.conf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/experimentor/iterators.py" beforeDir="false" afterPath="$PROJECT_DIR$/experimentor/iterators.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/experimentor/states.py" beforeDir="false" afterPath="$PROJECT_DIR$/experimentor/states.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/experimentor/experiment.py" beforeDir="false" afterPath="$PROJECT_DIR$/experimentor/experiment.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -26,35 +24,36 @@
           <entry key="conf" value="9" />
           <entry key="gitignore" value="3" />
           <entry key="md" value="3" />
-          <entry key="py" value="16" />
+          <entry key="py" value="17" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
           <entry key="Markdown" value="3" />
           <entry key="PLAIN_TEXT" value="12" />
-          <entry key="Python" value="16" />
+          <entry key="Python" value="17" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="conf" value="1398" />
+          <entry key="conf" value="1484" />
           <entry key="dummy" value="7" />
           <entry key="gitignore" value="10" />
           <entry key="md" value="146" />
-          <entry key="py" value="6140" />
+          <entry key="py" value="6187" />
           <entry key="txt" value="383" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
           <entry key="Markdown" value="146" />
-          <entry key="PLAIN_TEXT" value="1798" />
-          <entry key="Python" value="6140" />
+          <entry key="PLAIN_TEXT" value="1884" />
+          <entry key="Python" value="6187" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.vcs.git.usages">
         <counts>
+          <entry key="git.branch.checkout.local" value="1" />
           <entry key="git.branch.create.new" value="2" />
         </counts>
       </usages-collector>
@@ -62,11 +61,14 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="600">
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/experimentor/__init__.py">
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/experimentor/experiment.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="29">
-              <caret line="1" column="12" selection-start-line="1" selection-start-column="12" selection-end-line="1" selection-end-column="12" />
+            <state relative-caret-position="963">
+              <caret line="55" column="16" selection-start-line="55" selection-start-column="16" selection-end-line="55" selection-end-column="16" />
+              <folding>
+                <element signature="e#0#33#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -116,8 +118,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/experimentor/states.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="527">
-              <caret line="36" column="34" lean-forward="true" selection-start-line="36" selection-start-column="34" selection-end-line="36" selection-end-column="34" />
+            <state relative-caret-position="701">
+              <caret line="66" lean-forward="true" selection-start-line="66" selection-end-line="66" />
               <folding>
                 <element signature="e#0#29#0" expanded="true" />
               </folding>
@@ -128,17 +130,17 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/experimentor/iterators.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="261">
-              <caret line="9" selection-start-line="9" selection-end-line="9" />
+            <state relative-caret-position="232">
+              <caret line="8" column="29" selection-start-line="8" selection-start-column="29" selection-end-line="8" selection-end-column="29" />
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/examples/experiment_protocol.conf">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="722">
-              <caret line="62" column="89" selection-start-line="62" selection-start-column="89" selection-end-line="62" selection-end-column="89" />
+            <state relative-caret-position="290">
+              <caret line="34" lean-forward="true" selection-start-line="34" selection-end-line="34" />
             </state>
           </provider>
         </entry>
@@ -185,13 +187,13 @@
         <option value="$PROJECT_DIR$/README.md" />
         <option value="$PROJECT_DIR$/experimentor/__init__.py" />
         <option value="$PROJECT_DIR$/experimentor/measurements.py" />
-        <option value="$PROJECT_DIR$/experimentor/experiment.py" />
         <option value="$PROJECT_DIR$/.gitignore" />
         <option value="$PROJECT_DIR$/experimentor/protocol.py" />
         <option value="$PROJECT_DIR$/experimentor/Iterators.py" />
-        <option value="$PROJECT_DIR$/experimentor/iterators.py" />
         <option value="$PROJECT_DIR$/experimentor/states.py" />
+        <option value="$PROJECT_DIR$/experimentor/iterators.py" />
         <option value="$PROJECT_DIR$/examples/experiment_protocol.conf" />
+        <option value="$PROJECT_DIR$/experimentor/experiment.py" />
       </list>
     </option>
   </component>
@@ -383,7 +385,35 @@
       <option name="project" value="LOCAL" />
       <updated>1543159231412</updated>
     </task>
-    <option name="localTasksCounter" value="17" />
+    <task id="LOCAL-00017" summary="Works">
+      <created>1543166302161</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1543166302161</updated>
+    </task>
+    <task id="LOCAL-00018" summary="Works">
+      <created>1543167638725</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1543167638725</updated>
+    </task>
+    <task id="LOCAL-00019" summary="Works">
+      <created>1543167827018</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1543167827018</updated>
+    </task>
+    <task id="LOCAL-00020" summary="Works">
+      <created>1543167889532</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1543167889532</updated>
+    </task>
+    <option name="localTasksCounter" value="21" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -437,16 +467,6 @@
     <option name="LAST_COMMIT_MESSAGE" value="Works" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/experimentor/experiment.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3567">
-          <caret line="130" selection-start-line="130" selection-end-line="130" />
-          <folding>
-            <element signature="e#0#33#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/experimentor/__init__.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="29">
@@ -496,25 +516,35 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/experimentor/iterators.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="261">
-          <caret line="9" selection-start-line="9" selection-end-line="9" />
+        <state relative-caret-position="232">
+          <caret line="8" column="29" selection-start-line="8" selection-start-column="29" selection-end-line="8" selection-end-column="29" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/examples/experiment_protocol.conf">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="290">
+          <caret line="34" lean-forward="true" selection-start-line="34" selection-end-line="34" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/experimentor/states.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="527">
-          <caret line="36" column="34" lean-forward="true" selection-start-line="36" selection-start-column="34" selection-end-line="36" selection-end-column="34" />
+        <state relative-caret-position="701">
+          <caret line="66" lean-forward="true" selection-start-line="66" selection-end-line="66" />
           <folding>
             <element signature="e#0#29#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/examples/experiment_protocol.conf">
+    <entry file="file://$PROJECT_DIR$/experimentor/experiment.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="722">
-          <caret line="62" column="89" selection-start-line="62" selection-start-column="89" selection-end-line="62" selection-end-column="89" />
+        <state relative-caret-position="963">
+          <caret line="55" column="16" selection-start-line="55" selection-start-column="16" selection-end-line="55" selection-end-column="16" />
+          <folding>
+            <element signature="e#0#33#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
