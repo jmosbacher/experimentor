@@ -5,7 +5,7 @@ import logging
 import os
 import time
 import datetime
-import pymongo
+
 
 
 def print_state_to_stdout(state):
@@ -13,9 +13,9 @@ def print_state_to_stdout(state):
         print(f"{dev}:")
         print(' ; '.join([f"{k}={v}" for k,v in d.items()] ))
 
+
 class Experiment:
-    attributes = ['name', 'wd', 'metadata']
-    connected = True
+
     def __init__(self, name, system, working_dir: str, protocol_file: str,
                  measurements: Iterable[Measurement], metadata={},
                  validate_state=False, mongodb=None):
@@ -29,6 +29,7 @@ class Experiment:
         self.metadata = metadata
 
         if mongodb is not None:
+            import pymongo
             client = pymongo.MongoClient()
             self.db = client[mongodb]
         else:
@@ -111,5 +112,4 @@ class Experiment:
         fh.setFormatter(formatter)
         fh.setLevel(logging.INFO)
         self.logger.addHandler(fh)
-
 
