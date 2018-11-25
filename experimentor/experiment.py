@@ -68,9 +68,11 @@ class Experiment:
             if print_state:
                 print_state_to_stdout(state)
 
-            self.system.set_state(state)
+            self.system.set_state_async(state)
             if self.validate_state:
-                state = self.system.get_state()
+                rstate = self.system.get_state_async()
+                assert rstate == state
+
             self.logger.info(f"Finished moving to state {idx}. State changes:")
             self.logger.info(str(state))
             for measurement in self.measurements:
