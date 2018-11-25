@@ -2,7 +2,7 @@ from itertools import product
 from collections import defaultdict
 import time
 
-class Protocol:
+class States:
     def __init__(self, iterators, maps, evaluated, excluded):
         self.iterators = iterators
         self.maps = maps
@@ -12,7 +12,7 @@ class Protocol:
     @classmethod
     def from_config_file(cls, path):
         import configparser
-        config = configparser.ConfigParser()
+        config = configparser.ConfigParser(delimiters=(':'))
         config.read(path)
 
         aliases = dict(config['aliases'])
@@ -24,12 +24,15 @@ class Protocol:
             it = [(dev, attr, alias, val) for val in eval(expr)]
             iterators.append(it)
 
-        maps = []
-        for name, expr in config['mappings'].items():
+        maps = {
+            "multi": [],
+            "single": []
+        }
+        for name, kind in config['mappings'].items():
             dev, attr = name.split('.')
             alias = aliases.get(name, name)
             map = dict(config[name])
-            maps.append((dev, attr, alias, map))
+            maps[kind].append((dev, attr, alias, map))
 
         evaluated = []
         for name, expr in config['evaluated'].items():
@@ -50,19 +53,20 @@ class Protocol:
         return [s for s in self.iter_states()]
 
     def iter_states(self):
-        shared = {'state_idx':0, 'datetime': time.time()}
+        shared = {'state_idx': 0}
 
         # Iterate over the external product of iterators
         for iparams in product(*self.iterators):
-
+            shared['timestamp'] = int(time.time())
             state = defaultdict(dict)
             for dev, attr, alias, val in iparams:
                 shared[alias] = val
                 state[dev][attr] = val
 
             # set the mapped parameters
-            for dev, attr, alias, mapping in self.maps:
-                for val, expr in mapping.items():
+
+            for dev, attr, alias, mapping in self.maps["single"]:
+                for expr, val in mapping.items():
                     if eval(expr.format(**shared)):
                         shared[alias] = val
                         state[dev][attr] = val
@@ -75,8 +79,27 @@ class Protocol:
 
             if any([eval(expr.format(**shared)) for expr in self.excluded]):
                 continue
-            shared['state_idx'] += 1
-            yield state
+
+            maps = []
+            for dev, attr, alias, mapping in self.maps["multi"]:
+                map = []
+                for expr, val in mapping.items():
+                    if eval(expr.format(**shared)):
+                        map.append((dev, attr, alias, val))
+                maps.append(map)
+
+            states = []
+            for mparams in product(*maps):
+                for dev, attr, alias, val in mparams:
+                    s = {k:v for k,v in state.items()}
+                    s[dev][attr] = val
+                    states.append(s)
+            if not states:
+                states.append(state)
+
+            for state in states:
+                shared['state_idx'] += 1
+                yield state
 
     def __iter__(self):
         return self.iter_states()

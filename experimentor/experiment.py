@@ -1,6 +1,6 @@
 from typing import Iterable, Dict
 from .measurements import Measurement
-from .protocol import Protocol
+from .states import States
 import logging
 import os
 import time
@@ -50,7 +50,7 @@ class Experiment:
             state = {}
 
         backlog = {}
-        for idx, skip, running_state, new_state in Protocol.from_config_file(self.protocol_file):
+        for idx, skip, running_state, new_state in States.from_config_file(self.protocol_file):
             if print_datetime:
                 print(datetime.datetime.utcnow())
             if print_state_idx:
