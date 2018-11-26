@@ -5,7 +5,7 @@ import logging
 import os
 import time
 import datetime
-
+import configparser
 
 
 def print_state_to_stdout(state):
@@ -108,7 +108,9 @@ class Experiment:
                 f.write('\n\n'+'='*60+'\n\n')
 
         if self.db is not None:
-            
+            config = configparser.ConfigParser(delimiters=(':'))
+            config.read(self.protocol_file)
+            proto = {name: dict(config[name]) for name in config.sections()}
             doc = {
                 "creation_date": datetime.datetime.utcnow(),
                 "document_type": "experiment",
@@ -116,6 +118,7 @@ class Experiment:
                 "experiment_name": self.name,
                 "experiment_class": self.__class__.__name__,
                 "protocol_file_path": self.protocol_file,
+                "protocol": proto,
             }
             self.db[self.name].insert_one(doc)
 

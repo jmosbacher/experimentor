@@ -36,13 +36,12 @@ class States:
             cfg = dict(config[name])
             kind = cfg.pop('kind')
             alias = cfg.pop('alias', name)
-            if kind == 'iterExpr':
+            if kind == 'iterator':
                 it = IterExpression(dev, attr, alias, cfg["expr"], shared)
             elif kind == 'map':
                 nmax = cfg.pop('nmax', 1)
                 it = Map(dev, attr, alias, cfg, shared, nmax)
-            elif kind == 'eval':
-                it = Eval(dev, attr, alias, cfg["expr"], shared)
+
             iterators.append(it)
 
         return cls(iterators, shared,  tuple(excluded))
