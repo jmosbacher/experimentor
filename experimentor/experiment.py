@@ -44,7 +44,7 @@ class Experiment:
             self.startup_checks()
 
         if get_initial_state:
-            state = self.system.get_state()
+            state = self.system.get_state_async()
             self.logger.info("Initial State:")
             self.logger.info(str(state))
 
@@ -69,7 +69,7 @@ class Experiment:
             self.system.set_state_async(state)
             if self.validate_state:
                 rstate = self.system.get_state_async()
-                assert rstate == state
+                assert all([all([rstate[d][a] == state[d][a] for a in state[d]]) for d in state])
 
             self.logger.info(f"Finished moving to state {idx}. State changes:")
             self.logger.info(str(state))
