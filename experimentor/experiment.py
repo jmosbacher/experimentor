@@ -99,10 +99,12 @@ class Experiment:
             f.write(f"{datetime.datetime.utcnow()}:   {self.name} started.\nMetadata:\n\n")
             for k,v in self.metadata.items():
                 f.write(f"{k} : {v}\n")
+            proto_lines = []
             with open(self.protocol_file, "r") as pf:
                 f.write('='*25 + "  Protocol  " + '='*25 +'\n\n')
                 for line in pf:
                     f.write(line)
+                    proto_lines.append(line)
                 f.write('\n\n'+'='*60+'\n\n')
 
         if self.db is not None:
@@ -116,7 +118,7 @@ class Experiment:
                 "experiment_name": self.name,
                 "experiment_class": self.__class__.__name__,
                 "protocol_file_path": self.protocol_file,
-                "protocol": proto,
+                "protocol": "\n".join(proto_lines),
             }
             self.db[self.name].insert_one(doc)
 
