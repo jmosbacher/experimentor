@@ -27,15 +27,18 @@ class States:
         iterators = []
 
         shared = {}
-        names = [n for n in config.sections() if n not in special]
+        headings = [n for n in config.sections() if ':' in n]
 
         excluded = [(name, expr) for name, expr in config['excluded'].items()]
 
-        for name in names:
+        for heading in headings:
+            alias, kind, name = heading.split(':')
+            if alias=='':
+                alias = name.replace('.', '_')
             dev, attr = name.split('.')
-            cfg = dict(config[name])
-            kind = cfg.pop('kind')
-            alias = cfg.pop('alias', name)
+            cfg = dict(config[heading])
+            # kind = cfg.pop('kind')
+            # alias = cfg.pop('alias', name)
             if kind == 'iterator':
                 it = IterExpression(dev, attr, alias, cfg["expr"], shared)
             elif kind == 'map':

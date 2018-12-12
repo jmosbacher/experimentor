@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="a55084c1-8d2f-4014-a87d-912fdf9826e9" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/experimentor/experiment.py" beforeDir="false" afterPath="$PROJECT_DIR$/experimentor/experiment.py" afterDir="false" />
-    </list>
+    <list default="true" id="a55084c1-8d2f-4014-a87d-912fdf9826e9" name="Default Changelist" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -15,6 +12,7 @@
     <session id="874319588">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
+          <entry key="project.closed" value="1" />
           <entry key="project.open.time.33" value="1" />
           <entry key="project.opened" value="1" />
         </counts>
@@ -64,7 +62,7 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/experimentor/experiment.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="3248">
+            <state relative-caret-position="812">
               <caret line="112" column="10" lean-forward="true" selection-start-line="112" selection-start-column="10" selection-end-line="112" selection-end-column="10" />
               <folding>
                 <element signature="e#0#33#0" expanded="true" />
@@ -436,7 +434,14 @@
       <option name="project" value="LOCAL" />
       <updated>1543196805398</updated>
     </task>
-    <option name="localTasksCounter" value="24" />
+    <task id="LOCAL-00024" summary="remove redundant eval kind in config file">
+      <created>1543200426212</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1543200426212</updated>
+    </task>
+    <option name="localTasksCounter" value="25" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -565,7 +570,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/experimentor/experiment.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3248">
+        <state relative-caret-position="812">
           <caret line="112" column="10" lean-forward="true" selection-start-line="112" selection-start-column="10" selection-end-line="112" selection-end-column="10" />
           <folding>
             <element signature="e#0#33#0" expanded="true" />
