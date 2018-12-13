@@ -11,9 +11,13 @@ class Map:
     def __iter__(self):
         vals = []
         for expr, val in self.map.items():
+            
             if eval(expr.format(**self.shared_state)):
+                try:
+                    vals.append(eval(val.format(**self.shared_state)))
+                except:
+                     vals.append(val.format(**self.shared_state))
 
-                vals.append(eval(val.format(**self.shared_state)))
                 if len(vals) >= self.nmax:
                     break
 
@@ -44,7 +48,11 @@ class Eval:
         self.shared_state = shared_state
 
     def __iter__(self):
-        val = eval(self.expr.format(**self.shared_state))
+        try:
+            val = eval(self.expr.format(**self.shared_state))
+        except:
+            val = self.expr.format(**self.shared_state)
+        
         self.shared_state[self.alias] = val
         yield self.dev, self.attr, val
 
