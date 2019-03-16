@@ -1,4 +1,5 @@
 from typing import Iterable, Dict
+from .measurements import Measurement
 from .states import States
 import logging
 import os
@@ -15,13 +16,15 @@ def print_state_to_stdout(state):
 
 class Experiment:
 
-    def __init__(self, name, system, working_dir: str, protocol_file: str, metadata={},
+    def __init__(self, name, system, working_dir: str, protocol_file: str,
+                 measurements: Iterable[Measurement], metadata={},
                  validate_state=False, mongodb=None):
         self.name = name
         self.system = system
         self.system.experiment = self
         self.wd = working_dir
         self.protocol_file = protocol_file
+        self.measurements = measurements
         self.validate_state = validate_state
         self.metadata = metadata
 
@@ -70,7 +73,8 @@ class Experiment:
 
             self.logger.info(f"Finished moving to state {idx}. State changes:")
             self.logger.info(str(state))
-            
+            for measurement in self.measurements:
+                measurement.perform(idx, self.system, state)
 
     def startup_checks(self):
         self.logger.info("Checking that all devices are connected.")

@@ -52,10 +52,9 @@ class States:
 
     def __iter__(self):
         self.shared_state['state_idx'] = 0
-        # self.shared_state['timestamp'] = int(time.time())
+        self.shared_state['timestamp'] = int(time.time())
 
         for params in lazy_product(self.iterators):
-            
             state = defaultdict(dict)
             for dev, attr, val in params:
                 state[dev][attr] = val
@@ -67,7 +66,7 @@ class States:
             else:
                 self.shared_state['state_idx'] += 1
                 yield state
+
             self.shared_state['timestamp'] = int(time.time())
-            
 
 
