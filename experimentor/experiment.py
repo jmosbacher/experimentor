@@ -70,7 +70,8 @@ class Experiment:
 
             self.logger.info(f"Finished moving to state {idx}. State changes:")
             self.logger.info(str(state))
-            
+
+        self.close_logs()
 
     def startup_checks(self):
         self.logger.info("Checking that all devices are connected.")
@@ -124,4 +125,10 @@ class Experiment:
         fh.setFormatter(formatter)
         fh.setLevel(logging.INFO)
         self.logger.addHandler(fh)
+
+    def close_logs(self):
+        handlers = self.logger.handlers[:]
+        for handler in handlers:
+            handler.close()
+            self.logger.removeHandler(handler)
 
