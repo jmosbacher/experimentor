@@ -1,5 +1,5 @@
 from typing import Iterable, Dict
-from .protocol import Protocol
+from .turtles import Turtle
 import logging
 import os
 import time
@@ -45,9 +45,10 @@ class Experiment:
             state = self.system.get_state_async()
             self.logger.info("Initial State:")
             self.logger.info(str(state))
-
-        p = Protocol.from_config_file(self.protocol_file, context=self.context)
-        for idx, (state, procedures) in enumerate(p):
+        idx = 0
+        turtle = Turtle.from_protocol_file(self.protocol_file)
+        for context, state in turtle.states(self.context):
+            idx = context.get("count", idx+1)
             if print_datetime:
                 print('-'*60)
                 print(datetime.datetime.utcnow())
