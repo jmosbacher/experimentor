@@ -1,2 +1,2 @@
 from .experiment import Experiment
-from .states import States
+from .protocol import Protocol

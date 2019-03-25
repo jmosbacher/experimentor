@@ -14,7 +14,8 @@ def lazy_product(iters):
         for it in iters[0]:
             for rest in lazy_product(iters[1:]):
                 yield (it,) + rest
-class States:
+                
+class Protocol:
     def __init__(self, protocol, context):
         self.protocol = protocol
         self.context = context

@@ -1,5 +1,5 @@
 from typing import Iterable, Dict
-from .states import States
+from .protocol import Protocol
 import logging
 import os
 import time
@@ -45,8 +45,7 @@ class Experiment:
             self.logger.info("Initial State:")
             self.logger.info(str(state))
 
-
-        for idx, (state, procedures) in enumerate(States.from_config_file(self.protocol_file)):
+        for idx, (state, procedures) in enumerate(Protocol.from_config_file(self.protocol_file)):
 
             if print_datetime:
                 print('-'*60)
