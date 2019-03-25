@@ -1,7 +1,10 @@
 from itertools import product
 from collections import defaultdict
 import time
-from .iterators import Map, Eval, IterExpression
+import ast
+from .methods import method_map
+# from .iterators import Map, Procedure, IterExpression, Exclusion
+# import iterators
 
 
 def lazy_product(iters):
@@ -11,63 +14,51 @@ def lazy_product(iters):
         for it in iters[0]:
             for rest in lazy_product(iters[1:]):
                 yield (it,) + rest
-
 class States:
-    def __init__(self, iterators, shared, excluded=()):
-        self.iterators = iterators
-        self.shared_state = shared
-        self.excluded = excluded
-
+    def __init__(self, protocol, context):
+        self.protocol = protocol
+        self.context = context
+    
     @classmethod
-    def from_config_file(cls, path):
+    def from_config_file(cls, path, context={}):
         import configparser
         config = configparser.ConfigParser(delimiters=(':'))
         config.read(path)
-        special = ('excluded')
-        iterators = []
-
-        shared = {}
-        headings = [n for n in config.sections() if ':' in n]
-
-        excluded = [(name, expr) for name, expr in config['excluded'].items()]
-
-        for heading in headings:
-            alias, kind, name = heading.split(':')
-            if alias=='':
-                alias = name.replace('.', '_')
-            dev, attr = name.split('.')
-            cfg = dict(config[heading])
-            # kind = cfg.pop('kind')
-            # alias = cfg.pop('alias', name)
-            if kind == 'iterator':
-                it = IterExpression(dev, attr, alias, cfg["expr"], shared)
-            elif kind == 'map':
-                nmax = cfg.pop('nmax', 1)
-                it = Map(dev, attr, alias, cfg, shared, nmax)
-
-            iterators.append(it)
-
-        return cls(iterators, shared,  tuple(excluded))
-
+        protocol = []
+        
+        for heading in config.sections():
+            method, *args = heading.split(':')
+            kwargs = dict(config[heading])
+            it = method_map[method](context, *args, **kwargs)
+            protocol.append(it)
+        return cls(protocol, context)
 
     def __iter__(self):
-        self.shared_state['state_idx'] = 0
-        # self.shared_state['timestamp'] = int(time.time())
+        self.context['state_idx'] = 0
+        self.context['timestamp'] =  int(time.time())
+        self.context['data_dir'] = self.context.get('data_dir', '.')
 
-        for params in lazy_product(self.iterators):
-            
+        for param_list in lazy_product(self.protocol):
             state = defaultdict(dict)
-            for dev, attr, val in params:
-                state[dev][attr] = val
+            procedures = []
+            for method, *params in param_list:
+                if method in ['iterate', 'map'] and len(params)==3:
+                    dev, attr, val = params
+                    state[dev][attr] = val
+                
+                elif method == 'procedure' and params is not None:
+                    procedures.append(params)
 
-            for name, expr in self.excluded:
-                if eval(expr.format(**self.shared_state)):
-                    #self.logger.info(f"skipping state due to {name}")
-                    break
+                elif method == 'exclude':
+                    if None in params:
+                        continue
+                    else:
+                        name, expr = params
+                        # self.logger.info(f"skipping state due to {name}, {expr}")
+                        break
+                
             else:
-                self.shared_state['state_idx'] += 1
-                yield state
-            self.shared_state['timestamp'] = int(time.time())
-            
+                self.context['state_idx'] += 1
+                yield state, procedures
 
-
+            self.context['timestamp'] = int(time.time())

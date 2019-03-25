@@ -46,7 +46,7 @@ class Experiment:
             self.logger.info(str(state))
 
 
-        for idx, state in enumerate(States.from_config_file(self.protocol_file)):
+        for idx, (state, procedures) in enumerate(States.from_config_file(self.protocol_file)):
 
             if print_datetime:
                 print('-'*60)
@@ -70,6 +70,9 @@ class Experiment:
 
             self.logger.info(f"Finished moving to state {idx}. State changes:")
             self.logger.info(str(state))
+            for procedure in procedures:
+                for dev, attr, val in procedure:
+                    self.system[dev][attr] = val
 
         self.close_logs()
 
