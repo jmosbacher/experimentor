@@ -15,15 +15,16 @@ def print_state_to_stdout(state):
 
 class Experiment:
 
-    def __init__(self, name, system, working_dir: str, protocol_file: str, metadata={},
+    def __init__(self, name, system, protocol_file: str, context={},
                  validate_state=False, mongodb=None):
+
         self.name = name
         self.system = system
         self.system.experiment = self
-        self.wd = working_dir
+        self.wd = context.get("working_directory", ".")
         self.protocol_file = protocol_file
         self.validate_state = validate_state
-        self.metadata = metadata
+        self.context = context
 
         if mongodb is not None:
             import pymongo
@@ -45,8 +46,8 @@ class Experiment:
             self.logger.info("Initial State:")
             self.logger.info(str(state))
 
-        for idx, (state, procedures) in enumerate(Protocol.from_config_file(self.protocol_file)):
-
+        p = Protocol.from_config_file(self.protocol_file, context=self.context)
+        for idx, (state, procedures) in enumerate(p):
             if print_datetime:
                 print('-'*60)
                 print(datetime.datetime.utcnow())
@@ -95,8 +96,8 @@ class Experiment:
 
         path = os.path.join(folder,fname)
         with open(path, 'w') as f:
-            f.write(f"{datetime.datetime.utcnow()}:   {self.name} started.\nMetadata:\n\n")
-            for k,v in self.metadata.items():
+            f.write(f"{datetime.datetime.utcnow()}:   {self.name} started.\ Context:\n\n")
+            for k,v in self.context.items():
                 f.write(f"{k} : {v}\n")
             proto_lines = []
             with open(self.protocol_file, "r") as pf:
@@ -113,7 +114,7 @@ class Experiment:
             doc = {
                 "creation_date": datetime.datetime.utcnow(),
                 "document_type": "experiment",
-                "data": self.metadata,
+                "context": self.context,
                 "experiment_name": self.name,
                 "experiment_class": self.__class__.__name__,
                 "protocol_file_path": self.protocol_file,

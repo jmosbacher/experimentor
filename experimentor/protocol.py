@@ -14,7 +14,7 @@ def lazy_product(iters):
         for it in iters[0]:
             for rest in lazy_product(iters[1:]):
                 yield (it,) + rest
-                
+
 class Protocol:
     def __init__(self, protocol, context):
         self.protocol = protocol
@@ -37,7 +37,6 @@ class Protocol:
     def __iter__(self):
         self.context['state_idx'] = 0
         self.context['timestamp'] =  int(time.time())
-        self.context['data_dir'] = self.context.get('data_dir', '.')
 
         for param_list in lazy_product(self.protocol):
             state = defaultdict(dict)
