@@ -71,9 +71,9 @@ class Experiment:
 
             self.logger.info(f"Finished moving to state {idx}. State changes:")
             self.logger.info(str(state))
-            for procedure in procedures:
-                for dev, attr, val in procedure:
-                    self.system[dev][attr] = val
+            # for procedure in procedures:
+            #     for dev, attr, val in procedure:
+            #         self.system[dev][attr] = val
 
         self.close_logs()
 
