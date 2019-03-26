@@ -71,10 +71,12 @@ class Experiment:
 
             self.logger.info(f"Finished moving to state {idx}. State changes:")
             self.logger.info(str(state))
-            # for procedure in procedures:
-            #     for dev, attr, val in procedure:
-            #         self.system[dev][attr] = val
-
+            
+            for name, procedure in context.get("procedures", {}).items():
+                self.logger.info(f"Performeing procedure {name}...")
+                for dev, attr, val in procedure:
+                    self.system[dev][attr] = val
+                self.logger.info(f"Finished procedure {name}.")
         self.close_logs()
 
     def startup_checks(self):
