@@ -1,8 +1,6 @@
 import time
 
-
 class Turtle:
-
     @classmethod
     def from_protocol(cls, protocol):
         if len(protocol)>1:
@@ -37,10 +35,10 @@ class Turtle:
         ps = context.get("procudures", {})
         p = []
         for idx, stage in stages.items():
-            prop, val_expr = stage.replace(' ', '').split("=")
+            method, prop, val_expr = stage.replace(' ', '').split(",")
             dev, attr = prop.split('.')
             val = val_expr.format(**context)
-            p.append((dev, attr, val))
+            p.append((method, dev, attr, val))
         ps[alias] = p
         yield {"procudures": ps}, {}
 
@@ -71,7 +69,7 @@ class Turtle:
 
     @staticmethod
     def count(context):
-        cnt = context.get("count", 0)
+        cnt = context.get("count", -1)
         yield {"count": cnt+1}, {}
 
     @staticmethod

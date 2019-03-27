@@ -12,7 +12,6 @@ def print_state_to_stdout(state):
         print(f"{dev}:")
         print(' ; '.join([f"{k}={v}" for k,v in d.items()] ))
 
-
 class Experiment:
 
     def __init__(self, name, system, protocol_file: str, context={},
@@ -21,7 +20,7 @@ class Experiment:
         self.name = name
         self.system = system
         self.system.experiment = self
-        self.wd = context.get("working_directory", ".")
+        self.wd = context.get("working_directory", os.getcwd())
         self.protocol_file = protocol_file
         self.validate_state = validate_state
         self.context = context
@@ -74,8 +73,14 @@ class Experiment:
             
             for name, procedure in context.get("procedures", {}).items():
                 self.logger.info(f"Performeing procedure {name}...")
-                for dev, attr, val in procedure:
-                    self.system[dev][attr] = val
+                for method, dev, attr, val in procedure:
+                    if method == 'set':
+                        self.system[dev][attr] = val
+                    elif method == 'wait':
+                        while self.system[dev][attr] != val:
+                            time.sleep(0.05)
+                    else:
+                        self.logger.info(f"Procedure {name} failed, unrecognized method {method}.")  
                 self.logger.info(f"Finished procedure {name}.")
         self.close_logs()
 
@@ -99,7 +104,7 @@ class Experiment:
 
         path = os.path.join(folder,fname)
         with open(path, 'w') as f:
-            f.write(f"{datetime.datetime.utcnow()}:   {self.name} started.\ Context:\n\n")
+            f.write(f"{datetime.datetime.utcnow()}:   {self.name} started.\n Context:\n\n")
             for k,v in self.context.items():
                 f.write(f"{k} : {v}\n")
             proto_lines = []
