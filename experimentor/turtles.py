@@ -29,20 +29,6 @@ class Turtle:
             yield context, state
 
     @staticmethod
-    def procedure(context, alias, expr, **stages):
-        if not eval(expr.format(**context)):
-            yield {}, {}
-        ps = context.get("procudures", {})
-        p = []
-        for idx, stage in stages.items():
-            method, prop, val_expr = stage.replace(' ', '').split(",")
-            dev, attr = prop.split('.')
-            val = val_expr.format(**context)
-            p.append((method, dev, attr, val))
-        ps[alias] = p
-        yield {"procudures": ps}, {}
-
-    @staticmethod
     def map(context, alias, dev, attr, nmax=1, **mappings):
         vals = []
         nmax = int(nmax)

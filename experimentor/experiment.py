@@ -14,15 +14,13 @@ def print_state_to_stdout(state):
 
 class Experiment:
 
-    def __init__(self, name, system, protocol_file: str, context={},
-                 validate_state=False, mongodb=None):
+    def __init__(self, name, system, protocol, procedures, mongodb=None):
 
         self.name = name
         self.system = system
-        self.system.experiment = self
-        self.wd = context.get("working_directory", os.getcwd())
-        self.protocol_file = protocol_file
-        self.validate_state = validate_state
+        self.protocol = protocol
+        self.procedures = procedures
+      
         self.context = context
 
         if mongodb is not None:
@@ -35,7 +33,17 @@ class Experiment:
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel(logging.INFO)
 
-    def run(self, startfrom=0, skip_idxs=(), print_datetime=False,  print_state=False, print_state_idx=False, do_startup_checks=True, get_initial_state=True):
+    def run(self, context):
+        startfrom = context.get("startfrom" ,0) 
+        skip_idxs= context.get("skip_idxs" ,() )
+        print_datetime= context.get("print_datetime" , False)
+        print_state= context.get("print_state" ,False)
+        print_state_idx= context.get("print_state_idx" ,False)
+        do_startup_checks= context.get("do_startup_checks" ,True)
+        get_initial_state= context.get("get_initial_state" ,True)
+        self.wd = context.get("working_directory", os.getcwd())
+
+        
         self.setup_logging()
         if do_startup_checks:
             self.startup_checks()
@@ -46,7 +54,7 @@ class Experiment:
             self.logger.info(str(state))
         idx = 0
         turtle = Turtle.from_protocol_file(self.protocol_file)
-        for context, state in turtle.states(self.context):
+        for context, state in self.protocol:
             idx = context.get("count", idx+1)
             if print_datetime:
                 print('-'*60)
@@ -67,21 +75,13 @@ class Experiment:
             if self.validate_state:
                 rstate = self.system.get_state_async()
                 assert all([all([rstate[d][a] == state[d][a] for a in state[d]]) for d in state])
+            
+            self.procedures.perform(system, context)
 
             self.logger.info(f"Finished moving to state {idx}. State changes:")
             self.logger.info(str(state))
             
-            for name, procedure in context.get("procedures", {}).items():
-                self.logger.info(f"Performeing procedure {name}...")
-                for method, dev, attr, val in procedure:
-                    if method == 'set':
-                        self.system[dev][attr] = val
-                    elif method == 'wait':
-                        while self.system[dev][attr] != val:
-                            time.sleep(0.05)
-                    else:
-                        self.logger.info(f"Procedure {name} failed, unrecognized method {method}.")  
-                self.logger.info(f"Finished procedure {name}.")
+ 
         self.close_logs()
 
     def startup_checks(self):
@@ -124,7 +124,7 @@ class Experiment:
                 "document_type": "experiment",
                 "context": self.context,
                 "experiment_name": self.name,
-                "experiment_class": self.__class__.__name__,
+                # "experiment_class": self.__class__.__name__,
                 "protocol_file_path": self.protocol_file,
                 "protocol": "\n".join(proto_lines),
             }
