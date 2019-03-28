@@ -28,7 +28,7 @@ class Procedure:
                 getattr(self, method)(system, context, *args)
 
 
-class Procedures:
+class ProcedureGroup:
     def __init__(self, procedures):
         self.procedures = procedures
         
