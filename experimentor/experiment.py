@@ -31,7 +31,7 @@ class Experiment:
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel(logging.INFO)
 
-    def run(self, **settings):
+    def run(self, context={}, **settings):
         # settings = context.get("run_settings", {})
         startfrom = settings.get("startfrom" ,0) 
         skip_idxs = settings.get("skip_idxs" ,() )
@@ -51,10 +51,10 @@ class Experiment:
             state = self.system.get_state_async()
             self.logger.info("Initial State:")
             self.logger.info(str(state))
-            
+
         idx = 0
         # turtle = Turtle.from_protocol_file(self.protocol_file)
-        for context, state in self.protocol:
+        for context, state in self.protocol.states(context):
             idx = context.get("count", idx+1)
             if print_datetime:
                 print('-'*60)
