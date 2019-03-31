@@ -19,14 +19,21 @@ class Procedure:
         val = val_expr.format(**context)
         while system[dev][attr] != val:
             time.sleep(0.05)
-            
+
+    @staticmethod
+    def mongo_save_spectro(system, context, db, fpath, metadata={}):
+        pass
+        
+    @staticmethod
+    def mongo_save_power(system, context, fpath):
+        pass
+
     def perform(self, system, context):
         if not eval(self.global_condition.format(**context)):
             return
         for condition, method, args in self.steps:
             if eval(condition.format(**context)):
                 getattr(self, method)(system, context, *args)
-
 
 class ProcedureGroup:
     def __init__(self, procedures):
