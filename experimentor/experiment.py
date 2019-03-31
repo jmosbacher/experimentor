@@ -14,14 +14,12 @@ def print_state_to_stdout(state):
 
 class Experiment:
 
-    def __init__(self, name, system, protocol, procedures, mongodb=None):
+    def __init__(self, name, system,  protocol, procedures, mongodb=None, ):
 
         self.name = name
         self.system = system
         self.protocol = protocol
         self.procedures = procedures
-      
-        self.context = context
 
         if mongodb is not None:
             import pymongo
@@ -33,17 +31,18 @@ class Experiment:
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel(logging.INFO)
 
-    def run(self, context):
-        startfrom = context.get("startfrom" ,0) 
-        skip_idxs= context.get("skip_idxs" ,() )
-        print_datetime= context.get("print_datetime" , False)
-        print_state= context.get("print_state" ,False)
-        print_state_idx= context.get("print_state_idx" ,False)
-        do_startup_checks= context.get("do_startup_checks" ,True)
-        get_initial_state= context.get("get_initial_state" ,True)
-        self.wd = context.get("working_directory", os.getcwd())
+    def run(self, **settings):
+        # settings = context.get("run_settings", {})
+        startfrom = settings.get("startfrom" ,0) 
+        skip_idxs = settings.get("skip_idxs" ,() )
+        print_datetime = settings.get("print_datetime" , False)
+        print_state = settings.get("print_state" ,False)
+        print_state_idx = settings.get("print_state_idx" ,False)
+        do_startup_checks = settings.get("do_startup_checks" ,True)
+        get_initial_state = settings.get("get_initial_state" ,True)
+        validate_state = settings.get("validate_state", False)
+        self.wd = settings.get("working_directory", os.getcwd())
 
-        
         self.setup_logging()
         if do_startup_checks:
             self.startup_checks()
@@ -52,8 +51,9 @@ class Experiment:
             state = self.system.get_state_async()
             self.logger.info("Initial State:")
             self.logger.info(str(state))
+            
         idx = 0
-        turtle = Turtle.from_protocol_file(self.protocol_file)
+        # turtle = Turtle.from_protocol_file(self.protocol_file)
         for context, state in self.protocol:
             idx = context.get("count", idx+1)
             if print_datetime:
@@ -72,11 +72,11 @@ class Experiment:
                 print_state_to_stdout(state)
 
             self.system.set_state_async(state)
-            if self.validate_state:
+            if validate_state:
                 rstate = self.system.get_state_async()
                 assert all([all([rstate[d][a] == state[d][a] for a in state[d]]) for d in state])
             
-            self.procedures.perform(system, context)
+            self.procedures.perform(self.system, context)
 
             self.logger.info(f"Finished moving to state {idx}. State changes:")
             self.logger.info(str(state))
@@ -103,32 +103,32 @@ class Experiment:
             pass
 
         path = os.path.join(folder,fname)
-        with open(path, 'w') as f:
-            f.write(f"{datetime.datetime.utcnow()}:   {self.name} started.\n Context:\n\n")
-            for k,v in self.context.items():
-                f.write(f"{k} : {v}\n")
-            proto_lines = []
-            with open(self.protocol_file, "r") as pf:
-                f.write('='*25 + "  Protocol  " + '='*25 +'\n\n')
-                for line in pf:
-                    f.write(line)
-                    proto_lines.append(line)
-                f.write('\n\n'+'='*60+'\n\n')
+        # with open(path, 'w') as f:
+        #     f.write(f"{datetime.datetime.utcnow()}:   {self.name} started.\n Context:\n\n")
+            # for k,v in self.context.items():
+            #     f.write(f"{k} : {v}\n")
+            # proto_lines = []
+            # with open(self.protocol_file, "r") as pf:
+            #     f.write('='*25 + "  Protocol  " + '='*25 +'\n\n')
+            #     for line in pf:
+            #         f.write(line)
+            #         proto_lines.append(line)
+            #     f.write('\n\n'+'='*60+'\n\n')
 
-        if self.db is not None:
-            config = configparser.ConfigParser(delimiters=(':'))
-            config.read(self.protocol_file)
-            proto = {name: dict(config[name]) for name in config.sections()}
-            doc = {
-                "creation_date": datetime.datetime.utcnow(),
-                "document_type": "experiment",
-                "context": self.context,
-                "experiment_name": self.name,
-                # "experiment_class": self.__class__.__name__,
-                "protocol_file_path": self.protocol_file,
-                "protocol": "\n".join(proto_lines),
-            }
-            self.db[self.name].insert_one(doc)
+        # if self.db is not None:
+        #     config = configparser.ConfigParser(delimiters=(':'))
+        #     config.read(self.protocol_file)
+        #     proto = {name: dict(config[name]) for name in config.sections()}
+        #     doc = {
+        #         "creation_date": datetime.datetime.utcnow(),
+        #         "document_type": "experiment",
+        #         "context": self.context,
+        #         "experiment_name": self.name,
+        #         # "experiment_class": self.__class__.__name__,
+        #         "protocol_file_path": self.protocol_file,
+        #         "protocol": "\n".join(proto_lines),
+        #     }
+        #     self.db[self.name].insert_one(doc)
 
         
         fh = logging.FileHandler(path)
