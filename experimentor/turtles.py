@@ -80,7 +80,7 @@ class Turtle:
         for my_context, my_state in getattr(self, self.method)(context, *self.args, **self.kwargs):
             new_context = dict(context, **my_context)
             if self.turtle is None:
-                for action in new_context.pop('ground_floor', []):
+                for action in new_context.get('ground_floor', []):
                     ctx = action(new_context)
                     new_context.update(**ctx)
                 yield new_context, my_state
