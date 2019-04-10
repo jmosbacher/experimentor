@@ -63,7 +63,7 @@ class Turtle:
 
     @staticmethod
     def timestamp(context):
-        def timestamp(context):
+        def timestamp(ctx):
             return {"timestamp": int(time.time())}
         ground_floor = [timestamp]+ context.get('ground_floor', [])
         ctx = timestamp(context)
