@@ -54,14 +54,21 @@ class Turtle:
             yield context, {}
 
     @staticmethod
-    def count(context):
-        cnt = context.get("count", -1)
-        yield {"count": cnt+1}, {}
+    def count(context, start=0):
+        def increment(ctx):
+            cnt = ctx.get('count', start-1)
+            return {"count": cnt+1 }
+        ground_floor = [increment]+ context.get('ground_floor', [])
+        yield {"count": start-1, 'ground_floor': ground_floor }, {}
 
     @staticmethod
     def timestamp(context):
-        ts = int(time.time())
-        yield {"timestamp": ts}, {}
+        def timestamp(context):
+            return {"timestamp": int(time.time())}
+        ground_floor = [timestamp]+ context.get('ground_floor', [])
+        ctx = timestamp(context)
+        ctx.update(ground_floor=ground_floor)
+        yield ctx, {}
 
     def __init__(self, method, args, kwargs, turtle=None):
         self.method = method
@@ -73,6 +80,9 @@ class Turtle:
         for my_context, my_state in getattr(self, self.method)(context, *self.args, **self.kwargs):
             new_context = dict(context, **my_context)
             if self.turtle is None:
+                for action in context.pop('ground_floor', []):
+                    ctx = action(new_context)
+                    new_context.update(**ctx)
                 yield new_context, my_state
             else:
                 for turtle_context, turtle_state in self.turtle.states(new_context):
