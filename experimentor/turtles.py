@@ -95,3 +95,17 @@ class Turtle:
                     new_context.update(turtle_context)
                     yield new_context, new_state
 
+
+def state_diff(previous, current):
+    diff = copy.deepcopy(current)
+    if previous is None: return diff
+
+    for device, attributes in current.items():
+        for attribute, value in attributes.items():
+            if previous[device][attribute] == value:
+                diff[device].pop(attribute)
+
+        if not diff[device]:
+            diff.pop(device)
+
+    return diff

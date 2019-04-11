@@ -1,4 +1,5 @@
 from typing import Iterable, Dict
+from collections import defaultdict
 from .turtles import Turtle
 import logging
 import os
@@ -56,14 +57,15 @@ class Experiment:
         if do_startup_checks:
             self.startup_checks()
 
+        previous_state = defaultdict(lambda: defaultdict(dict))
         if get_initial_state:
-            state = self.system.get_state_async()
+            previous_state = self.system.get_state_async()
             self.logger.info("Initial State:")
-            self.logger.info(str(state))
+            self.logger.info(str(previous_state))
 
         idx = 0
         # turtle = Turtle.from_protocol_file(self.protocol_file)
-        for context, state in self.protocol.states(context):
+        for context, current_state in self.protocol.states(context):
             idx = context.get("count", idx+1)
             if print_datetime:
                 print('-'*60)
@@ -73,24 +75,28 @@ class Experiment:
                 print(idx)
                 
             if idx < startfrom or (idx in skip_idxs):
-                print_state_to_stdout(state)
+                print_state_to_stdout(current_state)
                 print(f"skipping state {idx}.")
                 continue
 
             if print_state:
-                print_state_to_stdout(state)
+                print_state_to_stdout(current_state)
 
-            self.system.set_state_async(state)
+            diff_state = state_diff(previous_state, current_state)
+            self.system.set_state_async(diff_state)
+
             if validate_state:
                 rstate = self.system.get_state_async()
                 assert all([all([rstate[d][a] == state[d][a] for a in state[d]]) for d in state])
-            
+
             self.procedures.perform(self.system, context)
 
             self.logger.info(f"Finished moving to state {idx}. State changes:")
-            self.logger.info(str(state))
-            
- 
+            self.logger.info(str(diff_state))
+
+            for device, attributes in current_state.items():
+                previous_state[device].update(attributes)
+
         self.close_logs()
 
     def startup_checks(self):
