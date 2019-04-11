@@ -42,8 +42,17 @@ class Experiment:
         get_initial_state = settings.get("get_initial_state" ,True)
         validate_state = settings.get("validate_state", False)
         self.wd = settings.get("working_directory", os.getcwd())
+        self.wd = os.path.join(self.wd, self.name)
+
 
         self.setup_logging()
+        self.logger.info(f"Working directory: {self.wd}")
+        if os.path.exists(self.wd):
+            self.logger.info("Directory already exists")
+
+        os.makedirs(self.wd, exist_ok=True)
+        context["workdir"] = self.wd
+
         if do_startup_checks:
             self.startup_checks()
 
@@ -94,15 +103,10 @@ class Experiment:
                 raise RuntimeError(f"{dev} is NOT connected.")
 
     def setup_logging(self):
-        fname = '_'.join([self.name, time.strftime("%Y%m%d_%H%M%S")])+".log"
-        folder = os.path.join(self.wd, self.name)
+        tstamp = time.strftime('%Y%m%d_%H%M%S')
+        fname  = f"{self.name}_{tstamp}.log"
+        path   = os.path.join(self.wd, fname)
 
-        try:
-            os.mkdir(folder)
-        except FileExistsError:
-            pass
-
-        path = os.path.join(folder,fname)
         # with open(path, 'w') as f:
         #     f.write(f"{datetime.datetime.utcnow()}:   {self.name} started.\n Context:\n\n")
             # for k,v in self.context.items():
