@@ -1,4 +1,6 @@
 import time
+import copy
+
 
 class Turtle:
     @classmethod
@@ -86,6 +88,24 @@ class Turtle:
                 yield new_context, my_state
             else:
                 for turtle_context, turtle_state in self.turtle.states(new_context):
-                    new_state = dict(my_state, **turtle_state)
+                    new_state = copy.deepcopy(mystate)
+                    for device, attributes in turtle_state.items():
+                        e.setdefault(device, attributes).update(attributes)
+
                     new_context.update(turtle_context)
                     yield new_context, new_state
+
+
+def state_diff(previous, current):
+    diff = copy.deepcopy(current)
+    if previous is None: return diff
+
+    for device, attributes in current.items():
+        for attribute, value in attributes.items():
+            if previous[device][attribute] == value:
+                diff[device].pop(attribute)
+
+        if not diff[device]:
+            diff.pop(device)
+
+    return diff

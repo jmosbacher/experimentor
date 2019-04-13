@@ -49,7 +49,7 @@ class ProcedureGroup:
             name, global_condition = heading.split(':')
             steps = []
             for condition, arg_expr in dict(config[heading]).items():
-                method, *args = arg_expr.split('->')
+                method, *args = arg_expr.replace(" ", "").split('->')
                 steps.append((condition, method, args))
             p = Procedure(name, global_condition, steps)
             procedures.append(p)
