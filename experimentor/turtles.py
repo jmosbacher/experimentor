@@ -88,9 +88,9 @@ class Turtle:
                 yield new_context, my_state
             else:
                 for turtle_context, turtle_state in self.turtle.states(new_context):
-                    new_state = copy.deepcopy(mystate)
+                    new_state = copy.deepcopy(my_state)
                     for device, attributes in turtle_state.items():
-                        e.setdefault(device, attributes).update(attributes)
+                        new_state.setdefault(device, attributes).update(attributes)
 
                     new_context.update(turtle_context)
                     yield new_context, new_state
