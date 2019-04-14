@@ -60,7 +60,7 @@ class Experiment:
 
         previous_state = defaultdict(lambda: defaultdict(dict))
         if get_initial_state:
-            previous_state = self.system.get_state_async()
+            previous_state.update(self.system.get_state_async())
             self.logger.info("Initial State:")
             self.logger.info(str(previous_state))
 
