@@ -1,6 +1,7 @@
 from typing import Iterable, Dict
 from collections import defaultdict
 from .turtles import Turtle
+from .turtles import state_diff
 import logging
 import os
 import time
