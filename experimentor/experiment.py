@@ -47,13 +47,13 @@ class Experiment:
         self.wd = os.path.join(self.wd, self.name)
 
 
+        os.makedirs(self.wd, exist_ok=True)
+        context["workdir"] = self.wd
+
         self.setup_logging()
         self.logger.info(f"Working directory: {self.wd}")
         if os.path.exists(self.wd):
             self.logger.info("Directory already exists")
-
-        os.makedirs(self.wd, exist_ok=True)
-        context["workdir"] = self.wd
 
         if do_startup_checks:
             self.startup_checks()
