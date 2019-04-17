@@ -25,8 +25,8 @@ class Turtle:
             
     @staticmethod
     def iterate(context, alias, dev, attr, expr='[]'):
-        for val in eval(expr.format(**context)):
-            context = {alias: val}
+        for index, val in enumerate(eval(expr.format(**context))):
+            context = {alias: val, alias + "_index": index}
             state = {dev: {attr: val}}
             yield context, state
 
@@ -43,7 +43,7 @@ class Turtle:
                 
                 vals.append(val)
         for val in vals[:nmax]:
-            context = {alias: val}
+            context = {alias: val, alias + "_index": index}
             state = {dev: {attr: val}}
             yield context, state
     

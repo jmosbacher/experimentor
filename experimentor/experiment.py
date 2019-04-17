@@ -1,6 +1,7 @@
 from typing import Iterable, Dict
 from collections import defaultdict
 from .turtles import Turtle
+from .turtles import state_diff
 import logging
 import os
 import time
@@ -46,20 +47,20 @@ class Experiment:
         self.wd = os.path.join(self.wd, self.name)
 
 
+        os.makedirs(self.wd, exist_ok=True)
+        context["workdir"] = self.wd
+
         self.setup_logging()
         self.logger.info(f"Working directory: {self.wd}")
         if os.path.exists(self.wd):
             self.logger.info("Directory already exists")
-
-        os.makedirs(self.wd, exist_ok=True)
-        context["workdir"] = self.wd
 
         if do_startup_checks:
             self.startup_checks()
 
         previous_state = defaultdict(lambda: defaultdict(dict))
         if get_initial_state:
-            previous_state = self.system.get_state_async()
+            previous_state.update(self.system.get_state_async())
             self.logger.info("Initial State:")
             self.logger.info(str(previous_state))
 
